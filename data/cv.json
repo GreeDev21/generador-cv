@@ -2,85 +2,144 @@
   "$schema": "greedev-cv-1.0",
   "schemaVersion": 2,
   "personalInfo": {
-    "name": "Agustín Burgos",
-    "email": "agus.ez.bug@gmail.com",
-    "phone": "",
-    "location": "Misiones, Argentina",
-    "website": "greedev.vercel.app",
-    "linkedin": "",
-    "github": "https://github.com/GreeDev21"
+    "name": "Alex Morgan",
+    "email": "alex.morgan@example.com",
+    "phone": "+1 (555) 123-4567",
+    "location": "San Francisco, CA",
+    "website": "alexmorgan.dev",
+    "linkedin": "https://linkedin.com/in/alexmorgan",
+    "github": "https://github.com/alexmorgan"
   },
   "summary": {
-    "en": "Frontend Designer & Developer with experience building modern web applications. Passionate about clean architecture, UI/UX design, and turning complex ideas into intuitive interfaces.",
-    "es": "Diseñador y Desarrollador Frontend con experiencia construyendo aplicaciones web modernas. Apasionado por la arquitectura limpia, el diseño UI/UX, y convertir ideas complejas en interfaces intuitivas."
+    "en": "Senior Full-Stack Engineer with 8+ years of experience building scalable web applications. Passionate about clean code, system architecture, and mentoring junior developers.",
+    "es": "Ingeniero Full-Stack Senior con más de 8 años de experiencia construyendo aplicaciones web escalables. Apasionado por el código limpio, la arquitectura de sistemas y la mentoría de desarrolladores junior."
   },
   "experiences": [
     {
-      "id": "exp-webxpert",
-      "company": "WebXpert",
+      "id": "exp-techcorp",
+      "company": "TechCorp Inc.",
       "role": {
-        "en": "Co-founder · Design & Frontend",
-        "es": "Co-fundador · Diseño & Frontend"
+        "en": "Senior Full-Stack Engineer",
+        "es": "Ingeniero Full-Stack Senior"
       },
       "location": {
-        "en": "Argentina",
-        "es": "Argentina"
+        "en": "San Francisco, CA",
+        "es": "San Francisco, CA"
       },
-      "startDate": "2025-01",
+      "startDate": "2021-03",
       "endDate": null,
       "current": true,
       "bullets": [
         {
-          "en": "Building digital products from concept to deployment",
-          "es": "Creando productos digitales desde el concepto hasta el deployment"
+          "en": "Led migration of monolithic Rails app to microservices architecture, reducing deployment time by 60%",
+          "es": "Lideré la migración de una app monolítica Rails a microservicios, reduciendo el tiempo de deploy en un 60%"
         },
         {
-          "en": "Leading design and frontend development across multiple projects",
-          "es": "Liderando el diseño y desarrollo frontend en múltiples proyectos"
+          "en": "Designed and implemented GraphQL API serving 10M+ requests/day",
+          "es": "Diseñé e implementé una API GraphQL que sirve 10M+ solicitudes/día"
+        },
+        {
+          "en": "Mentored 4 junior engineers through structured pair programming and code reviews",
+          "es": "Mentoreé a 4 ingenieros junior mediante pair programming y code reviews estructurados"
         }
       ]
     },
     {
-      "id": "exp-silicon",
-      "company": "Silicon Misiones",
+      "id": "exp-startuply",
+      "company": "Startuply",
       "role": {
-        "en": "Intern · Design & Frontend",
-        "es": "Pasante · Diseño & Frontend"
+        "en": "Frontend Lead",
+        "es": "Líder de Frontend"
       },
       "location": {
-        "en": "Argentina",
-        "es": "Argentina"
+        "en": "Remote",
+        "es": "Remoto"
       },
-      "startDate": "2026-05",
-      "endDate": "2026-07",
+      "startDate": "2018-06",
+      "endDate": "2021-02",
       "current": false,
       "bullets": [
         {
-          "en": "Developed user-facing interfaces for \"Mi Futuro Misiones\", a government education platform",
-          "es": "Desarrollé interfaces de usuario para \"Mi Futuro Misiones\", una plataforma educativa gubernamental"
+          "en": "Built component library from scratch used by 3 product teams",
+          "es": "Construí una librería de componentes desde cero usada por 3 equipos de producto"
         },
         {
-          "en": "Worked with Next.js, Prisma, and TailwindCSS as part of a 4-person team",
-          "es": "Trabajé con Next.js, Prisma y TailwindCSS como parte de un equipo de 4 personas"
+          "en": "Migrated legacy jQuery codebase to React, improving page load times by 40%",
+          "es": "Migré una codebase legacy de jQuery a React, mejorando los tiempos de carga en un 40%"
+        },
+        {
+          "en": "Introduced end-to-end testing with Cypress, achieving 90% coverage",
+          "es": "Introduje testing end-to-end con Cypress, alcanzando 90% de cobertura"
+        }
+      ]
+    },
+    {
+      "id": "exp-devstart",
+      "company": "DevStart Agency",
+      "role": {
+        "en": "Junior Developer",
+        "es": "Desarrollador Junior"
+      },
+      "location": {
+        "en": "Austin, TX",
+        "es": "Austin, TX"
+      },
+      "startDate": "2016-01",
+      "endDate": "2018-05",
+      "current": false,
+      "bullets": [
+        {
+          "en": "Developed responsive landing pages for 15+ client projects",
+          "es": "Desarrollé landing pages responsivas para más de 15 proyectos de clientes"
+        },
+        {
+          "en": "Built custom WordPress themes and plugins",
+          "es": "Construí temas y plugins personalizados de WordPress"
         }
       ]
     }
   ],
   "education": [
     {
-      "id": "edu-systems",
-      "institution": "Instituto Superior Combate de Mbororé",
+      "id": "edu-stanford",
+      "institution": "Stanford University",
       "degree": {
-        "en": "Associate Degree",
-        "es": "Tecnicatura"
+        "en": "B.Sc.",
+        "es": "Licenciatura"
       },
       "field": {
-        "en": "Systems Analysis",
-        "es": "Análisis de Sistemas"
+        "en": "Computer Science",
+        "es": "Ciencias de la Computación"
       },
-      "startDate": "2024-03",
-      "endDate": null,
-      "current": true,
+      "startDate": "2012-09",
+      "endDate": "2016-06",
+      "current": false,
+      "gpa": "3.8",
+      "achievements": [
+        {
+          "en": "Dean's List 2014, 2015",
+          "es": "Cuadro de Honor 2014, 2015"
+        },
+        {
+          "en": "Teaching Assistant for Data Structures",
+          "es": "Asistente de Cátedra en Estructuras de Datos"
+        }
+      ]
+    },
+    {
+      "id": "edu-mit-online",
+      "institution": "MIT OpenCourseWare",
+      "degree": {
+        "en": "Certificate",
+        "es": "Certificado"
+      },
+      "field": {
+        "en": "Machine Learning",
+        "es": "Machine Learning"
+      },
+      "startDate": "2020-01",
+      "endDate": "2020-06",
+      "current": false,
       "gpa": "",
       "achievements": []
     }
@@ -91,7 +150,10 @@
       "category": "Languages",
       "items": [
         "TypeScript",
-        "JavaScript"
+        "JavaScript",
+        "Python",
+        "Go",
+        "Rust"
       ]
     },
     {
@@ -99,56 +161,89 @@
       "category": "Frameworks",
       "items": [
         "React",
-        "Next.js"
+        "Next.js",
+        "Node.js",
+        "GraphQL",
+        "PostgreSQL"
       ]
     },
     {
       "id": "skill-tools",
       "category": "Tools",
       "items": [
-        "Git",
-        "Figma"
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "Terraform",
+        "GitHub Actions"
       ]
     },
     {
       "id": "skill-concepts",
       "category": "Concepts",
       "items": [
-        "UI/UX Design",
-        "Responsive Design",
-        "Accessibility"
+        "Microservices",
+        "System Design",
+        "CI/CD",
+        "Test-Driven Development",
+        "Agile"
       ]
     }
   ],
   "projects": [
     {
-      "id": "proj-portfolio",
+      "id": "proj-opencontrib",
       "name": {
-        "en": "Portfolio",
-        "es": "Portafolio"
+        "en": "OpenContrib",
+        "es": "OpenContrib"
       },
       "description": {
-        "en": "Personal portfolio built with Astro",
-        "es": "Portafolio personal construido con Astro"
+        "en": "Open-source contribution tracker for GitHub organizations",
+        "es": "Rastreador de contribuciones open-source para organizaciones de GitHub"
       },
       "technologies": [
-        "Astro",
-        "Vercel",
-        "Resend"
+        "TypeScript",
+        "React",
+        "GraphQL",
+        "PostgreSQL"
       ],
-      "url": "https://greedev.vercel.app",
+      "url": "https://github.com/alexmorgan/opencontrib",
       "bullets": [
         {
-          "en": "Contact form with server-side email via Resend",
-          "es": "Formulario de contacto con email server-side via Resend"
+          "en": "300+ GitHub stars and 15 contributors",
+          "es": "300+ estrellas en GitHub y 15 contribuidores"
         },
         {
-          "en": "Bilingual EN/ES with custom i18n system",
-          "es": "Bilingüe EN/ES con sistema i18n personalizado"
+          "en": "Automated weekly reports via GitHub Actions",
+          "es": "Reportes semanales automatizados via GitHub Actions"
+        }
+      ]
+    },
+    {
+      "id": "proj-realtime-dash",
+      "name": {
+        "en": "Real-Time Dashboard",
+        "es": "Dashboard en Tiempo Real"
+      },
+      "description": {
+        "en": "Real-time analytics dashboard for monitoring microservice health",
+        "es": "Dashboard de análisis en tiempo real para monitoreo de salud de microservicios"
+      },
+      "technologies": [
+        "React",
+        "D3.js",
+        "Socket.io",
+        "Redis"
+      ],
+      "url": "",
+      "bullets": [
+        {
+          "en": "Processes 1M+ events per minute with sub-second latency",
+          "es": "Procesa 1M+ eventos por minuto con latencia de menos de un segundo"
         },
         {
-          "en": "SSR with @astrojs/vercel adapter",
-          "es": "SSR con adaptador @astrojs/vercel"
+          "en": "WebSocket-based live updates with auto-reconnect",
+          "es": "Actualizaciones en vivo basadas en WebSocket con reconexión automática"
         }
       ]
     }

@@ -5,12 +5,12 @@
   "created": "2026-07-02",
   "updated": "2026-07-02",
   "targetRole": {
-    "en": "Frontend Developer",
-    "es": "Desarrollador Frontend"
+    "en": "Senior Full-Stack Engineer",
+    "es": "Ingeniero Full-Stack Senior"
   },
   "targetCompany": {
-    "en": "",
-    "es": ""
+    "en": "TechCorp Inc.",
+    "es": "TechCorp Inc."
   },
   "summary": {
     "en": "",
@@ -25,11 +25,13 @@
     "projects": true
   },
   "selectedExperiences": [
-    "exp-webxpert",
-    "exp-silicon"
+    "exp-techcorp",
+    "exp-startuply",
+    "exp-devstart"
   ],
   "selectedEducation": [
-    "edu-systems"
+    "edu-stanford",
+    "edu-mit-online"
   ],
   "selectedSkills": [
     "Languages",
@@ -38,7 +40,8 @@
     "Concepts"
   ],
   "selectedProjects": [
-    "proj-portfolio"
+    "proj-opencontrib",
+    "proj-realtime-dash"
   ],
   "experienceBullets": {}
 }

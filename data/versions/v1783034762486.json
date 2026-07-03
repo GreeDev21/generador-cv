@@ -1,13 +1,22 @@
 {
   "$schema": "greedev-version-1.0",
   "id": "v1783034762486",
-  "label": "Silicon",
+  "label": "TechCorp Focus",
   "created": "2026-07-02",
   "updated": "2026-07-02",
   "language": "es",
-  "targetRole": "",
-  "targetCompany": "",
-  "summary": "",
+  "targetRole": {
+    "en": "Senior Engineer",
+    "es": "Ingeniero Senior"
+  },
+  "targetCompany": {
+    "en": "",
+    "es": ""
+  },
+  "summary": {
+    "en": "",
+    "es": ""
+  },
   "sections": {
     "summary": true,
     "education": true,
@@ -16,18 +25,19 @@
     "projects": true
   },
   "selectedExperiences": [
-    "exp-webxpert",
-    "exp-silicon"
+    "exp-techcorp",
+    "exp-startuply"
   ],
   "selectedEducation": [
-    "edu-systems"
+    "edu-stanford"
   ],
   "selectedSkills": [
     "Languages",
     "Frameworks",
-    "Tools",
-    "Concepts"
+    "Tools"
   ],
-  "selectedProjects": [],
+  "selectedProjects": [
+    "proj-opencontrib"
+  ],
   "experienceBullets": {}
 }
