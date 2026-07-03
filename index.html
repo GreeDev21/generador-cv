@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreeDev CV</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>GreeDev CV</h1>
+      <div class="header-controls">
+        <select id="version-selector"></select>
+        <span id="server-status" class="status-dot offline" title="Server offline"></span>
+      </div>
+    </header>
+    <div class="toolbar">
+      <div class="lang-toggle">
+        <button id="btn-lang-en" class="btn lang-btn active" aria-label="Switch to English">EN</button>
+        <button id="btn-lang-es" class="btn lang-btn" aria-label="Switch to Spanish">ES</button>
+      </div>
+      <span class="toolbar-divider"></span>
+      <button id="btn-new" class="btn btn-primary">New Version</button>
+      <button id="btn-duplicate" class="btn">Duplicate</button>
+      <button id="btn-delete" class="btn btn-danger">Delete</button>
+      <button id="btn-pdf" class="btn">Download PDF</button>
+      <button id="btn-save" class="btn btn-primary">Save</button>
+    </div>
+    <div id="notification" class="notification" style="display:none"></div>
+    <div class="app-body">
+      <section id="editor-panel" class="editor-panel"></section>
+      <section id="preview-panel" class="preview-panel"></section>
+    </div>
+  </div>
+
+  <script src="/js/data-store.js"></script>
+  <script src="/js/editor.js"></script>
+  <script src="/js/preview.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

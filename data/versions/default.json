@@ -1,0 +1,44 @@
+{
+  "$schema": "greedev-version-1.0",
+  "id": "default",
+  "label": "Default CV",
+  "created": "2026-07-02",
+  "updated": "2026-07-02",
+  "targetRole": {
+    "en": "Frontend Developer",
+    "es": "Desarrollador Frontend"
+  },
+  "targetCompany": {
+    "en": "",
+    "es": ""
+  },
+  "summary": {
+    "en": "",
+    "es": ""
+  },
+  "language": "en",
+  "sections": {
+    "summary": true,
+    "education": true,
+    "experience": true,
+    "skills": true,
+    "projects": true
+  },
+  "selectedExperiences": [
+    "exp-webxpert",
+    "exp-silicon"
+  ],
+  "selectedEducation": [
+    "edu-systems"
+  ],
+  "selectedSkills": [
+    "Languages",
+    "Frameworks",
+    "Tools",
+    "Concepts"
+  ],
+  "selectedProjects": [
+    "proj-portfolio"
+  ],
+  "experienceBullets": {}
+}

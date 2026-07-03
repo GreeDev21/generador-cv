@@ -1,0 +1,156 @@
+{
+  "$schema": "greedev-cv-1.0",
+  "schemaVersion": 2,
+  "personalInfo": {
+    "name": "Agustín Burgos",
+    "email": "agus.ez.bug@gmail.com",
+    "phone": "",
+    "location": "Misiones, Argentina",
+    "website": "greedev.vercel.app",
+    "linkedin": "",
+    "github": "https://github.com/GreeDev21"
+  },
+  "summary": {
+    "en": "Frontend Designer & Developer with experience building modern web applications. Passionate about clean architecture, UI/UX design, and turning complex ideas into intuitive interfaces.",
+    "es": "Diseñador y Desarrollador Frontend con experiencia construyendo aplicaciones web modernas. Apasionado por la arquitectura limpia, el diseño UI/UX, y convertir ideas complejas en interfaces intuitivas."
+  },
+  "experiences": [
+    {
+      "id": "exp-webxpert",
+      "company": "WebXpert",
+      "role": {
+        "en": "Co-founder · Design & Frontend",
+        "es": "Co-fundador · Diseño & Frontend"
+      },
+      "location": {
+        "en": "Argentina",
+        "es": "Argentina"
+      },
+      "startDate": "2025-01",
+      "endDate": null,
+      "current": true,
+      "bullets": [
+        {
+          "en": "Building digital products from concept to deployment",
+          "es": "Creando productos digitales desde el concepto hasta el deployment"
+        },
+        {
+          "en": "Leading design and frontend development across multiple projects",
+          "es": "Liderando el diseño y desarrollo frontend en múltiples proyectos"
+        }
+      ]
+    },
+    {
+      "id": "exp-silicon",
+      "company": "Silicon Misiones",
+      "role": {
+        "en": "Intern · Design & Frontend",
+        "es": "Pasante · Diseño & Frontend"
+      },
+      "location": {
+        "en": "Argentina",
+        "es": "Argentina"
+      },
+      "startDate": "2026-05",
+      "endDate": "2026-07",
+      "current": false,
+      "bullets": [
+        {
+          "en": "Developed user-facing interfaces for \"Mi Futuro Misiones\", a government education platform",
+          "es": "Desarrollé interfaces de usuario para \"Mi Futuro Misiones\", una plataforma educativa gubernamental"
+        },
+        {
+          "en": "Worked with Next.js, Prisma, and TailwindCSS as part of a 4-person team",
+          "es": "Trabajé con Next.js, Prisma y TailwindCSS como parte de un equipo de 4 personas"
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-systems",
+      "institution": "Instituto Superior Combate de Mbororé",
+      "degree": {
+        "en": "Associate Degree",
+        "es": "Tecnicatura"
+      },
+      "field": {
+        "en": "Systems Analysis",
+        "es": "Análisis de Sistemas"
+      },
+      "startDate": "2024-03",
+      "endDate": null,
+      "current": true,
+      "gpa": "",
+      "achievements": []
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-languages",
+      "category": "Languages",
+      "items": [
+        "TypeScript",
+        "JavaScript"
+      ]
+    },
+    {
+      "id": "skill-frameworks",
+      "category": "Frameworks",
+      "items": [
+        "React",
+        "Next.js"
+      ]
+    },
+    {
+      "id": "skill-tools",
+      "category": "Tools",
+      "items": [
+        "Git",
+        "Figma"
+      ]
+    },
+    {
+      "id": "skill-concepts",
+      "category": "Concepts",
+      "items": [
+        "UI/UX Design",
+        "Responsive Design",
+        "Accessibility"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-portfolio",
+      "name": {
+        "en": "Portfolio",
+        "es": "Portafolio"
+      },
+      "description": {
+        "en": "Personal portfolio built with Astro",
+        "es": "Portafolio personal construido con Astro"
+      },
+      "technologies": [
+        "Astro",
+        "Vercel",
+        "Resend"
+      ],
+      "url": "https://greedev.vercel.app",
+      "bullets": [
+        {
+          "en": "Contact form with server-side email via Resend",
+          "es": "Formulario de contacto con email server-side via Resend"
+        },
+        {
+          "en": "Bilingual EN/ES with custom i18n system",
+          "es": "Bilingüe EN/ES con sistema i18n personalizado"
+        },
+        {
+          "en": "SSR with @astrojs/vercel adapter",
+          "es": "SSR con adaptador @astrojs/vercel"
+        }
+      ]
+    }
+  ]
+}

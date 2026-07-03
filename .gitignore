@@ -1,0 +1,14 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# CV data (JSON files are user data)
+*.json
+!openspec/**/*.json
+!data/**/*.json

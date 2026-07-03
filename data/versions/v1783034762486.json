@@ -1,0 +1,33 @@
+{
+  "$schema": "greedev-version-1.0",
+  "id": "v1783034762486",
+  "label": "Silicon",
+  "created": "2026-07-02",
+  "updated": "2026-07-02",
+  "language": "es",
+  "targetRole": "",
+  "targetCompany": "",
+  "summary": "",
+  "sections": {
+    "summary": true,
+    "education": true,
+    "experience": true,
+    "skills": true,
+    "projects": true
+  },
+  "selectedExperiences": [
+    "exp-webxpert",
+    "exp-silicon"
+  ],
+  "selectedEducation": [
+    "edu-systems"
+  ],
+  "selectedSkills": [
+    "Languages",
+    "Frameworks",
+    "Tools",
+    "Concepts"
+  ],
+  "selectedProjects": [],
+  "experienceBullets": {}
+}

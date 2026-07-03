@@ -1,0 +1,55 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: HTML5, CSS3, Vanilla JS (ES6+)
+  Architecture: Plain files, no framework, no build step
+  Testing: None available (pure frontend with no test runner)
+  Style: No CSS framework, CSS custom properties for theming, print styles for PDF
+  Persistence: JSON files on local filesystem for CV version data
+
+testing:
+  strict_tdd: false
+  detected: 2026-07-02
+  runner:
+    command: ""
+    framework: none
+  layers:
+    unit: { available: false, tool: "—" }
+    integration: { available: false, tool: "—" }
+    e2e: { available: false, tool: "—" }
+  coverage:
+    available: false
+    command: ""
+  quality:
+    linter: { available: false, command: "" }
+    type_checker: { available: false, command: "" }
+    formatter: { available: false, command: "" }
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Clarify if a change affects the JSON schema for CV data
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Define JSON schema changes explicitly
+  design:
+    - Include data-flow diagrams for CRUD operations
+    - Document JSON schema for CV data structures
+    - Specify print CSS strategy for PDF output
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Separate UI, logic, and print concerns
+  apply:
+    - Follow existing code patterns (IIFE module pattern)
+    - No build step — changes must work in the browser directly
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
