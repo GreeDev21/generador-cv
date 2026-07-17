@@ -1,3 +1,6 @@
+// DEPRECATED: This local-only server is replaced by Vercel Functions for production.
+// Keep for local development/testing without Vercel.
+//
 // Greedev CV — Local HTTP Server (Node.js stdlib, zero npm)
 // Serves static files, exposes POST /api/save for filesystem writes,
 // and GET /api/versions for version listing.
