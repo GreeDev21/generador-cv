@@ -1,7 +1,7 @@
 // Greedev CV — DataStore Module
-// Two-tier JSON data model: base pool (data/cv.json) + version config overlay.
+// Two-tier JSON data model: base pool (API) + version config overlay.
 // Dispatches GreedevCV:datachange on state mutations.
-// Falls back to Blob download when the server is unreachable.
+// All persistence goes through the Vercel API with Bearer token auth.
 
 window.GreedevCV = window.GreedevCV || {};
 
@@ -12,11 +12,11 @@ window.GreedevCV = window.GreedevCV || {};
    * Internal state of the DataStore.
    *
    * @typedef {Object} DataStoreState
-   * @property {Object|null}  base              — Raw base pool from data/cv.json
+   * @property {Object|null}  base              — Raw base pool from API (GET /api/cv/pool)
    * @property {Array}        versions          — List of version manifests [{ id, label, created, updated }]
    * @property {string|null}  activeVersionId   — Currently selected version ID
    * @property {Object|null}  activeVersion     — Full version config for the active version
-   * @property {boolean}      serverAvailable   — Whether the server responded to a ping
+   * @property {boolean}      serverAvailable   — Always true on Vercel
    */
 
   /** @type {DataStoreState} */
@@ -25,7 +25,7 @@ window.GreedevCV = window.GreedevCV || {};
     versions: [],
     activeVersionId: null,
     activeVersion: null,
-    serverAvailable: false,
+    serverAvailable: true,
   };
 
   // ── Event helpers ─────────────────────────────────────────────────
@@ -162,6 +162,52 @@ window.GreedevCV = window.GreedevCV || {};
     return data;
   }
 
+  // ── Auth helpers ──────────────────────────────────────────────────────
+
+  var TOKEN_KEY = 'greedevcv-token';
+
+  function getToken() {
+    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
+  }
+
+  /**
+   * Fetch wrapper that attaches Bearer token and handles 401 redirect.
+   *
+   * @param {string} path
+   * @param {Object} [options]
+   * @returns {Promise<Response>}
+   */
+  async function apiFetch(path, options) {
+    options = options || {};
+    var token = getToken();
+    var headers = { 'Content-Type': 'application/json' };
+
+    // Merge caller headers
+    if (options.headers) {
+      for (var k in options.headers) {
+        if (options.headers.hasOwnProperty(k)) {
+          headers[k] = options.headers[k];
+        }
+      }
+    }
+
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+
+    var res = await fetch(path, {
+      method: options.method || 'GET',
+      headers: headers,
+      body: options.body || undefined,
+    });
+
+    if (res.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login.html';
+      throw new Error('Unauthorized');
+    }
+
+    return res;
+  }
+
   // ── localStorage scratchpad ─────────────────────────────────────────
 
   var DRAFT_KEY = 'greedevcv-draft';
@@ -186,67 +232,112 @@ window.GreedevCV = window.GreedevCV || {};
   /** Debounced variant for use on every editor keystroke. */
   var debouncedSaveDraft = debounce(saveDraft, 500);
 
+  // ── Version manifest normalizer ──────────────────────────────────────
+
+  /**
+   * Normalize a version record from the API (snake_case columns) to
+   * the frontend's camelCase convention.
+   *
+   * @param {Object} v  — API version row { id, label, created_at, updated_at }
+   * @returns {Object}  — { id, label, created, updated }
+   */
+  function normalizeVersion(v) {
+    return {
+      id: v.id,
+      label: v.label,
+      created: v.created_at || v.created,
+      updated: v.updated_at || v.updated,
+    };
+  }
+
+  // ── Default version config builder ───────────────────────────────────
+
+  /**
+   * Build a fresh version config object (without an id — the server
+   * assigns one on POST).
+   *
+   * @param {string} label
+   * @returns {Object}
+   */
+  function buildVersionConfig(label) {
+    var now = new Date().toISOString().slice(0, 10);
+    return {
+      $schema: 'greedev-version-1.0',
+      label: label,
+      created: now,
+      updated: now,
+      language: 'en',
+      targetRole: '',
+      targetCompany: '',
+      summary: '',
+      sections: {
+        summary: true,
+        education: true,
+        experience: true,
+        skills: true,
+        projects: true,
+      },
+      selectedExperiences: [],
+      selectedEducation: [],
+      selectedSkills: [],
+      selectedProjects: [],
+      experienceBullets: {},
+    };
+  }
+
   // ── Public API ────────────────────────────────────────────────────
 
   /**
-   * Initialise the DataStore: ping server, load base pool, load versions.
-   * Dispatches GreedevCV:datachange on success or GreedevCV:error on failure.
+   * Initialise the DataStore: fetch base pool, load versions, load the
+   * first version config.  Dispatches GreedevCV:datachange on success or
+   * GreedevCV:error on failure.
    *
    * @returns {Promise<void>}
    */
   async function init() {
     try {
-      // 1. Load base pool
-      var baseRes = await fetch('/data/cv.json');
-      if (!baseRes.ok) {
-        throw new Error('Missing data/cv.json');
-      }
-      state.base = await baseRes.json();
+      // 1. Fetch base pool from API
+      var poolRes = await apiFetch('/api/cv/pool');
+      var poolData = await poolRes.json();
+      state.base = poolData && poolData.data !== undefined ? poolData.data : null;
 
-      // 2. Validate schema version (accept v1 or v2)
-      if (state.base.schemaVersion !== 1 && state.base.schemaVersion !== 2) {
-        throw new Error('Unsupported schema version. Expected 1 or 2.');
-      }
-
-      // 2b. Migrate v1 → v2 if needed
-      var needsMigration = state.base.schemaVersion === 1;
-      state.base = migrateToV2(state.base);
-
-      // 3. Try loading version list — doubles as server availability check
-      state.serverAvailable = false;
-      try {
-        var versionsRes = await fetch('/api/versions');
-        if (versionsRes.ok) {
-          state.versions = await versionsRes.json();
-          state.serverAvailable = true;
+      // 2. Validate and migrate schema
+      var needsMigration = false;
+      if (state.base) {
+        if (state.base.schemaVersion !== 1 && state.base.schemaVersion !== 2) {
+          throw new Error('Unsupported schema version. Expected 1 or 2.');
         }
-      } catch (_) {
-        // Server unreachable — version list stays empty
+        needsMigration = state.base.schemaVersion === 1;
+        state.base = migrateToV2(state.base);
       }
 
-      // 5. Load first available version
+      // 3. Fetch version list
+      var versionsRes = await apiFetch('/api/cv/versions');
+      state.versions = (await versionsRes.json()).map(normalizeVersion);
+      state.serverAvailable = true;
+
+      // 4. Load first available version
       if (state.versions.length > 0) {
         state.activeVersionId = state.versions[0].id;
-        try {
-          var vRes = await fetch('/data/versions/' + state.activeVersionId + '.json');
-          if (vRes.ok) {
-            state.activeVersion = await vRes.json();
-            state.activeVersion = migrateToV2(state.activeVersion);
-          }
-        } catch (_) {
+        var vRes = await apiFetch('/api/cv/versions/' + state.activeVersionId);
+        if (vRes.ok) {
+          state.activeVersion = await vRes.json();
+          state.activeVersion = migrateToV2(state.activeVersion);
+          state.activeVersion.id = state.activeVersionId;
+        } else {
           state.activeVersion = null;
         }
       }
 
       // Auto-save migrated data as v2
       if (needsMigration) {
-        saveBase();
+        if (state.base) saveBase();
         if (state.activeVersion) save();
       }
 
       emitChange();
 
-      // 6. Check for a newer localStorage draft
+      // 5. Check for a newer localStorage draft
       checkDraft();
     } catch (err) {
       dispatch('GreedevCV:error', { message: err.message });
@@ -269,7 +360,7 @@ window.GreedevCV = window.GreedevCV || {};
 
   /**
    * Switch the active version by ID.
-   * Fetches the version config from the server.
+   * Fetches the version config from the API.
    *
    * @param {string} id
    */
@@ -281,11 +372,12 @@ window.GreedevCV = window.GreedevCV || {};
     state.activeVersionId = id;
 
     try {
-      var res = await fetch('/data/versions/' + id + '.json');
+      var res = await apiFetch('/api/cv/versions/' + id);
       if (!res.ok) {
         throw new Error('Version "' + id + '" not found');
       }
       state.activeVersion = await res.json();
+      state.activeVersion.id = id;
       emitChange();
     } catch (err) {
       dispatch('GreedevCV:error', { message: err.message });
@@ -319,23 +411,17 @@ window.GreedevCV = window.GreedevCV || {};
   }
 
   /**
-   * Internal helper: persist content to a file path via POST /api/save.
-   * Falls back to Blob download if the server is unreachable.
+   * Save the active version config to the API via PATCH /api/cv/versions/[id].
    *
-   * @param {string} path     — file path, e.g. "data/cv.json"
-   * @param {*}      content  — JSON-serializable content
-   * @returns {Promise<boolean>}  — true if saved to server; false if fallback was used
+   * @returns {Promise<boolean>}  — true on success, false on failure
    */
-  async function saveToServer(path, content) {
-    if (!content) return false;
-
-    var payload = { path: path, content: content };
+  async function save() {
+    if (!state.activeVersion) return false;
 
     try {
-      var res = await fetch('/api/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      var res = await apiFetch('/api/cv/versions/' + state.activeVersion.id, {
+        method: 'PATCH',
+        body: JSON.stringify({ config: state.activeVersion }),
       });
 
       if (res.ok) {
@@ -343,123 +429,78 @@ window.GreedevCV = window.GreedevCV || {};
         return true;
       }
 
-      throw new Error('Server responded with ' + res.status);
+      return false;
     } catch (_) {
-      // Fallback: trigger a Blob download
-      var blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      var anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = path.split('/').pop() || 'export.json';
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(url);
-
-      dispatch('GreedevCV:saved', { source: 'local' });
       return false;
     }
   }
 
   /**
-   * Delete a version file from the server via DELETE /api/save.
-   * Silently fails if the server is unreachable (memory-only delete).
+   * Save the base pool to the API via PUT /api/cv/pool.
    *
-   * @param {string} id  — version ID (maps to data/versions/{id}.json)
+   * @returns {Promise<boolean>}  — true on success, false on failure
    */
-  async function deleteVersionFile(id) {
-    if (!state.serverAvailable) return;
-    var payload = { path: 'data/versions/' + id + '.json' };
+  async function saveBase() {
+    if (!state.base) return false;
+
     try {
-      var res = await fetch('/api/save', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      var res = await apiFetch('/api/cv/pool', {
+        method: 'PUT',
+        body: JSON.stringify({ data: state.base }),
       });
-      if (!res.ok) {
-        console.warn('Server delete failed (' + res.status + ') — version file may remain on disk');
-      }
+
+      return res.ok;
     } catch (_) {
-      // Server unreachable — version removed from memory only
+      return false;
     }
   }
 
   /**
-   * Save the active version to the server via POST /api/save.
-   * Delegates to saveToServer with the version file path.
+   * Create a new version on the server, add it to the local list, and
+   * switch to it.
    *
-   * @returns {Promise<boolean>}  — true if saved to server; false if fallback was used
-   */
-  async function save() {
-    if (!state.activeVersion) return false;
-    return saveToServer('data/versions/' + state.activeVersion.id + '.json', state.activeVersion);
-  }
-
-  /**
-   * Save the base pool to the server via POST /api/save.
-   *
-   * @returns {Promise<boolean>}  — true if saved to server; false if fallback was used
-   */
-  async function saveBase() {
-    return saveToServer('data/cv.json', state.base);
-  }
-
-  /**
-   * Create a new version from scratch, save it, and switch to it.
-   *
-   * @param {string} id
    * @param {string} label
-   * @returns {string}  — the new version id
+   * @returns {Promise<string|null>}  — the new version id, or null on failure
    */
-  function newVersion(id, label) {
-    var now = new Date().toISOString().slice(0, 10);
+  async function newVersion(label) {
+    var config = buildVersionConfig(label);
 
-    var version = {
-      $schema: 'greedev-version-1.0',
-      id: id,
-      label: label,
-      created: now,
-      updated: now,
-      language: 'en',
-      targetRole: '',
-      targetCompany: '',
-      summary: '',
-      sections: {
-        summary: true,
-        education: true,
-        experience: true,
-        skills: true,
-        projects: true,
-      },
-      selectedExperiences: [],
-      selectedEducation: [],
-      selectedSkills: [],
-      selectedProjects: [],
-      experienceBullets: {},
-    };
+    try {
+      var res = await apiFetch('/api/cv/versions', {
+        method: 'POST',
+        body: JSON.stringify({ label: label, config: config }),
+      });
 
-    // Add to version list
-    state.versions.push({
-      id: id,
-      label: label,
-      created: now,
-      updated: now,
-    });
+      if (!res.ok) {
+        dispatch('GreedevCV:error', { message: 'Failed to create version' });
+        return null;
+      }
 
-    // Switch to it
-    state.activeVersionId = id;
-    state.activeVersion = version;
+      var result = await res.json();
+      var id = result.id;
 
-    // Save immediately (fire-and-forget is fine — user can also click Save)
-    save();
+      // Apply server-assigned id to the local config
+      config.id = id;
 
-    emitChange();
-    return id;
+      // Add to version list
+      state.versions.push(normalizeVersion(result));
+
+      // Switch to it
+      state.activeVersionId = id;
+      state.activeVersion = config;
+
+      emitChange();
+      return id;
+    } catch (err) {
+      dispatch('GreedevCV:error', { message: err.message });
+      return null;
+    }
   }
 
   /**
-   * Delete a version from the in-memory list and from the server file system.
-   * Will not delete the last remaining version.
+   * Delete a version on the server and from the local list.
+   * The server enforces the "last version cannot be deleted" rule
+   * (returns 400).
    *
    * @param {string} id
    * @returns {Promise<boolean>}  — true if deleted, false if blocked (last version)
@@ -469,35 +510,97 @@ window.GreedevCV = window.GreedevCV || {};
       return false;
     }
 
-    // Delete the version file from server (silent if unreachable)
-    await deleteVersionFile(id);
+    try {
+      var res = await apiFetch('/api/cv/versions/' + id, { method: 'DELETE' });
 
-    state.versions = state.versions.filter(function (v) {
-      return v.id !== id;
-    });
+      // Server returns 400 when attempting to delete the last version
+      if (res.status === 400) {
+        return false;
+      }
 
-    // If the active version was deleted, switch to the first remaining
-    if (state.activeVersionId === id) {
-      var next = state.versions[0];
-      state.activeVersionId = next.id;
-      state.activeVersion = null;
+      if (!res.ok && res.status !== 204) {
+        throw new Error('Server responded with ' + res.status);
+      }
 
-      // Load the next version config
-      fetch('/data/versions/' + next.id + '.json')
-        .then(function (r) {
-          return r.ok ? r.json() : null;
-        })
-        .then(function (v) {
-          state.activeVersion = v;
-          emitChange();
-        });
+      // Remove from local list
+      state.versions = state.versions.filter(function (v) {
+        return v.id !== id;
+      });
 
-      // Return early — emitChange happens after async load
+      // If the active version was deleted, switch to the first remaining
+      if (state.activeVersionId === id) {
+        var next = state.versions[0];
+        state.activeVersionId = next.id;
+        state.activeVersion = null;
+
+        // Load the next version config
+        var vRes = await apiFetch('/api/cv/versions/' + next.id);
+        if (vRes.ok) {
+          state.activeVersion = await vRes.json();
+          state.activeVersion.id = next.id;
+        }
+      }
+
+      emitChange();
       return true;
+    } catch (err) {
+      dispatch('GreedevCV:error', { message: err.message });
+      return false;
+    }
+  }
+
+  /**
+   * Deep-clone the active version (or the version identified by `id`)
+   * via the API, add it to the version list, switch to it, and emit change.
+   *
+   * @param {string} [id]  — source version ID; defaults to active version
+   * @returns {Promise<string|null>}  — new version ID, or null on failure
+   */
+  async function duplicateVersion(id) {
+    var sourceId = id || state.activeVersionId;
+    var source = state.activeVersion;
+
+    if (!source || source.id !== sourceId) {
+      dispatch('GreedevCV:error', { message: 'Cannot duplicate: source version not loaded' });
+      return null;
     }
 
-    emitChange();
-    return true;
+    // Deep clone
+    var cloned = JSON.parse(JSON.stringify(source));
+    cloned.label = cloned.label + ' (copy)';
+    var now = new Date().toISOString().slice(0, 10);
+    cloned.created = now;
+    cloned.updated = now;
+    delete cloned.id; // server generates a new id
+
+    try {
+      var res = await apiFetch('/api/cv/versions', {
+        method: 'POST',
+        body: JSON.stringify({ label: cloned.label, config: cloned }),
+      });
+
+      if (!res.ok) {
+        dispatch('GreedevCV:error', { message: 'Failed to duplicate version' });
+        return null;
+      }
+
+      var result = await res.json();
+      var newId = result.id;
+      cloned.id = newId;
+
+      // Add manifest entry
+      state.versions.push(normalizeVersion(result));
+
+      // Switch active version to the clone
+      state.activeVersionId = newId;
+      state.activeVersion = cloned;
+
+      emitChange();
+      return newId;
+    } catch (err) {
+      dispatch('GreedevCV:error', { message: err.message });
+      return null;
+    }
   }
 
   // ── localStorage draft: check / discard / restore ─────────────────
@@ -565,56 +668,6 @@ window.GreedevCV = window.GreedevCV || {};
       localStorage.removeItem(DRAFT_KEY);
       emitChange();
     } catch (_) {}
-  }
-
-  // ── duplicateVersion ────────────────────────────────────────────────
-
-  /**
-   * Deep-clone the active version (or the version identified by `id`)
-   * with a new ID, "(copy)" label, and today's dates.  Adds it to the
-   * version list, switches the active version, saves, and emits change.
-   *
-   * @param {string} [id]  — source version ID; defaults to active version
-   * @returns {string|null}  — new version ID, or null on failure
-   */
-  function duplicateVersion(id) {
-    var sourceId = id || state.activeVersionId;
-    var source = state.activeVersion;
-
-    if (!source || source.id !== sourceId) {
-      dispatch('GreedevCV:error', { message: 'Cannot duplicate: source version not loaded' });
-      return null;
-    }
-
-    var newId = generateId();
-    var now = new Date().toISOString().slice(0, 10);
-
-    // Deep clone
-    var cloned = JSON.parse(JSON.stringify(source));
-    cloned.id = newId;
-    cloned.label = cloned.label + ' (copy)';
-    cloned.created = now;
-    cloned.updated = now;
-
-    // Add manifest entry
-    state.versions.push({
-      id: newId,
-      label: cloned.label,
-      created: now,
-      updated: now,
-    });
-
-    // Switch active version to the clone
-    state.activeVersionId = newId;
-    state.activeVersion = cloned;
-
-    // Persist to server
-    save();
-
-    // Notify UI
-    emitChange();
-
-    return newId;
   }
 
   // ── Language state ────────────────────────────────────────────────────

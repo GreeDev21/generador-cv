@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "vercel-build": "echo 'Static site — no build needed'"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
