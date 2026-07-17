@@ -32,7 +32,7 @@ function requireAuth(req, res) {
  */
 function signToken(user) {
   return jwt.sign(
-    { user_id: user.id, email: user.email },
+    { user_id: user.id, email: user.email, name: user.name || '' },
     JWT_SECRET,
     { expiresIn: TOKEN_EXPIRY }
   );

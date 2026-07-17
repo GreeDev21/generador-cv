@@ -250,6 +250,7 @@
         }
 
         localStorage.setItem('greedevcv-token', data.token);
+        localStorage.setItem('greedevcv-user', JSON.stringify(data.user));
         window.location.href = '/index.html';
       } catch (err) {
         showAuthError('Network error. Please try again.');

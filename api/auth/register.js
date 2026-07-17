@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const { email, password } = body || {};
+  const { email, password, name } = body || {};
 
   // Validate
   if (!email || !EMAIL_REGEX.test(email)) {
@@ -35,6 +35,11 @@ module.exports = async (req, res) => {
 
   if (!password || password.length < 8) {
     res.status(400).json({ error: 'Password must be at least 8 characters' });
+    return;
+  }
+
+  if (!name || name.trim().length === 0) {
+    res.status(400).json({ error: 'Name is required' });
     return;
   }
 
@@ -53,14 +58,14 @@ module.exports = async (req, res) => {
 
     // Insert user
     const result = await db.query(
-      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
-      [email, password_hash]
+      'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name',
+      [email, password_hash, name.trim()]
     );
 
     const user = result.rows[0];
     const token = signToken(user);
 
-    res.status(200).json({ token });
+    res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Internal server error' });

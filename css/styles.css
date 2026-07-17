@@ -256,6 +256,19 @@ body {
   color: #fff;
 }
 
+.btn-logout {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.btn-logout:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: transparent;
+}
+
 /* ── Version Selector ──────────────────────────────────────────────── */
 
 #version-selector {

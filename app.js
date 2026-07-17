@@ -7,6 +7,35 @@ window.GreedevCV = window.GreedevCV || {};
 (function () {
   'use strict';
 
+  // ── Auth helpers ─────────────────────────────────────────────────────
+
+  var TOKEN_KEY = 'greedevcv-token';
+  var USER_KEY = 'greedevcv-user';
+
+  function getStoredUser() {
+    try {
+      var raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+
+  function logout() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    window.location.href = '/login.html';
+  }
+
+  /**
+   * Set the app title to "<name> CV".
+   */
+  function updateAppTitle() {
+    var user = getStoredUser();
+    var titleEl = document.getElementById('app-title');
+    if (titleEl) {
+      titleEl.textContent = user && user.name ? (user.name + ' CV') : 'GreeDev CV';
+    }
+  }
+
   // ── Helpers ─────────────────────────────────────────────────────────
 
   /**
@@ -219,11 +248,27 @@ window.GreedevCV = window.GreedevCV || {};
 
       // Auth guard: redirect to login if no token
       var token = null;
-      try { token = localStorage.getItem('greedevcv-token'); } catch (_) {}
+      try { token = localStorage.getItem(TOKEN_KEY); } catch (_) {}
       if (!token) {
         window.location.href = '/login.html';
         return;
       }
+
+      // Ensure we have user info in localStorage (backfill from API if missing)
+      if (!getStoredUser()) {
+        try {
+          var meRes = await fetch('/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (meRes.ok) {
+            var me = await meRes.json();
+            localStorage.setItem(USER_KEY, JSON.stringify(me));
+          }
+        } catch (_) {}
+      }
+
+      // Update title with user's name
+      updateAppTitle();
 
       // Wire UI controls
       var versionSel = document.getElementById('version-selector');
@@ -247,6 +292,10 @@ window.GreedevCV = window.GreedevCV || {};
       if (pdfBtn) pdfBtn.addEventListener('click', function () {
         window.print();
       });
+
+      // Logout button
+      var logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
       // Language toggle
       var langEn = document.getElementById('btn-lang-en');

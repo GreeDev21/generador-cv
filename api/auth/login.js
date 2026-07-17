@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
   try {
     const db = await getDb();
 
-    const result = await db.query('SELECT id, email, password_hash FROM users WHERE email = $1', [email]);
+    const result = await db.query('SELECT id, email, name, password_hash FROM users WHERE email = $1', [email]);
     if (result.rows.length === 0) {
       res.status(401).json({ error: 'Invalid credentials' });
       return;
@@ -44,9 +44,9 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const token = signToken({ id: user.id, email: user.email });
+    const token = signToken({ id: user.id, email: user.email, name: user.name });
 
-    res.status(200).json({ token });
+    res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Internal server error' });

@@ -167,6 +167,12 @@
 
         <form id="register-form" novalidate>
           <div class="auth-field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name">
+            <div class="field-error" id="name-error"></div>
+          </div>
+
+          <div class="auth-field">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
             <div class="field-error" id="email-error"></div>
@@ -191,14 +197,18 @@
 
   <script>
     const form = document.getElementById('register-form');
+    const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const nameError = document.getElementById('name-error');
     const emailError = document.getElementById('email-error');
     const passwordError = document.getElementById('password-error');
     const authError = document.getElementById('auth-error');
     const submitBtn = document.getElementById('submit-btn');
 
     function clearErrors() {
+      nameError.classList.remove('visible');
+      nameError.textContent = '';
       emailError.classList.remove('visible');
       emailError.textContent = '';
       passwordError.classList.remove('visible');
@@ -221,11 +231,17 @@
       e.preventDefault();
       clearErrors();
 
+      const name = nameInput.value.trim();
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
       // Client-side validation
       let valid = true;
+
+      if (!name) {
+        showFieldError(nameError, 'Name is required');
+        valid = false;
+      }
 
       if (!email) {
         showFieldError(emailError, 'Email is required');
@@ -249,7 +265,7 @@
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ name, email, password })
         });
 
         const data = await res.json();
@@ -260,6 +276,7 @@
         }
 
         localStorage.setItem('greedevcv-token', data.token);
+        localStorage.setItem('greedevcv-user', JSON.stringify(data.user));
         window.location.href = '/index.html';
       } catch (err) {
         showAuthError('Network error. Please try again.');
