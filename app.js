@@ -84,11 +84,11 @@ window.GreedevCV = window.GreedevCV || {};
     var ds = window.GreedevCV && window.GreedevCV.DataStore;
     if (!ds) return;
 
-    ds.save().then(function (savedToServer) {
-      if (savedToServer) {
-        notify('Version saved to server', 'success');
+    ds.save().then(function (ok) {
+      if (ok) {
+        notify('Version saved', 'success');
       } else {
-        notify('Server unreachable. File downloaded instead.', 'info');
+        notify('Failed to save version', 'error');
       }
     });
   }
@@ -96,15 +96,14 @@ window.GreedevCV = window.GreedevCV || {};
   /**
    * Handle New Version button.
    */
-  function onNewVersion() {
+  async function onNewVersion() {
     var ds = window.GreedevCV && window.GreedevCV.DataStore;
     if (!ds) return;
 
-    var id = 'v' + Date.now();
     var label = prompt('Enter a label for the new version:');
     if (!label) return; // cancelled
 
-    ds.newVersion(id, label);
+    await ds.newVersion(label);
     populateVersionSelector();
     notify('New version "' + label + '" created', 'success');
   }
@@ -112,11 +111,11 @@ window.GreedevCV = window.GreedevCV || {};
   /**
    * Handle Duplicate button — delegates to DataStore.duplicateVersion().
    */
-  function onDuplicate() {
+  async function onDuplicate() {
     var ds = window.GreedevCV && window.GreedevCV.DataStore;
     if (!ds) return;
 
-    var newId = ds.duplicateVersion();
+    var newId = await ds.duplicateVersion();
     if (newId) {
       populateVersionSelector();
       var state = ds.getState();
@@ -218,6 +217,14 @@ window.GreedevCV = window.GreedevCV || {};
     async init() {
       console.log('Greedev CV initializing...');
 
+      // Auth guard: redirect to login if no token
+      var token = null;
+      try { token = localStorage.getItem('greedevcv-token'); } catch (_) {}
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
       // Wire UI controls
       var versionSel = document.getElementById('version-selector');
       if (versionSel) {
@@ -295,7 +302,6 @@ window.GreedevCV = window.GreedevCV || {};
             '<div class="error-state">' +
             '<h2>Failed to load CV data</h2>' +
             '<p>' + err.message + '</p>' +
-            '<p>Make sure the server is running and <code>data/cv.json</code> exists.</p>' +
             '</div>';
         }
       }

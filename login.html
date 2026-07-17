@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — GreeDev CV</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    /* ── Auth layout ─────────────────────────────────────────────── */
+    .auth-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 100px);
+      padding: 24px;
+    }
+
+    .auth-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--color-text);
+    }
+
+    .auth-card .auth-subtitle {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .auth-field {
+      margin-bottom: 16px;
+    }
+
+    .auth-field label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+
+    .auth-field input {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .auth-field input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-focus-ring);
+    }
+
+    .auth-field .field-error {
+      font-size: 0.75rem;
+      color: var(--color-danger);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .auth-field .field-error.visible {
+      display: block;
+    }
+
+    .auth-submit {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      background: var(--color-primary);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      margin-top: 8px;
+    }
+
+    .auth-submit:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+
+    .auth-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-error {
+      display: none;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .auth-error.visible {
+      display: block;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 28px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>GreeDev CV</h1>
+    </header>
+
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <h2>Sign In</h2>
+        <p class="auth-subtitle">Enter your credentials to access your CV</p>
+
+        <div id="auth-error" class="auth-error"></div>
+
+        <form id="login-form" novalidate>
+          <div class="auth-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email">
+            <div class="field-error" id="email-error"></div>
+          </div>
+
+          <div class="auth-field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+            <div class="field-error" id="password-error"></div>
+          </div>
+
+          <button type="submit" class="auth-submit" id="submit-btn">Sign In</button>
+        </form>
+
+        <p class="auth-footer">
+          Don't have an account? <a href="/register.html">Register</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+    const authError = document.getElementById('auth-error');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function clearErrors() {
+      emailError.classList.remove('visible');
+      emailError.textContent = '';
+      passwordError.classList.remove('visible');
+      passwordError.textContent = '';
+      authError.classList.remove('visible');
+      authError.textContent = '';
+    }
+
+    function showFieldError(el, msg) {
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    function showAuthError(msg) {
+      authError.textContent = msg;
+      authError.classList.add('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      // Client-side validation
+      let valid = true;
+
+      if (!email) {
+        showFieldError(emailError, 'Email is required');
+        valid = false;
+      }
+
+      if (!password) {
+        showFieldError(passwordError, 'Password is required');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showAuthError(data.error || 'Login failed');
+          return;
+        }
+
+        localStorage.setItem('greedevcv-token', data.token);
+        window.location.href = '/index.html';
+      } catch (err) {
+        showAuthError('Network error. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>

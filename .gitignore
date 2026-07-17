@@ -12,3 +12,6 @@ Thumbs.db
 *.json
 !openspec/**/*.json
 !data/**/*.json
+!package.json
+!package-lock.json
+!vercel.json
