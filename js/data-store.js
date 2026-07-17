@@ -335,9 +335,32 @@ window.GreedevCV = window.GreedevCV || {};
         if (state.activeVersion) save();
       }
 
+      // 5. Seed default data for brand-new users (no pool, no versions)
+      if (!state.base) {
+        state.base = {
+          $schema: 'greedev-cv-1.0',
+          schemaVersion: 2,
+          personalInfo: {},
+          summary: '',
+          experiences: [],
+          education: [],
+          skills: [],
+          projects: [],
+        };
+        await saveBase();
+      }
+
+      if (state.versions.length === 0) {
+        var firstVersionId = await newVersion('First Version');
+        // newVersion already emits change, skip the emit below
+        // but we still need draft check
+        checkDraft();
+        return;
+      }
+
       emitChange();
 
-      // 5. Check for a newer localStorage draft
+      // 6. Check for a newer localStorage draft
       checkDraft();
     } catch (err) {
       dispatch('GreedevCV:error', { message: err.message });
