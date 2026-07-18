@@ -67,6 +67,28 @@ body {
   gap: 10px;
 }
 
+.header-logo {
+  height: 32px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-brand .brand-logo {
+  height: 36px;
+  width: auto;
+}
+
+.auth-brand h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
 /* ── Toolbar ───────────────────────────────────────────────────────── */
 
 .toolbar {
