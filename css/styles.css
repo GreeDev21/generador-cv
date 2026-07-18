@@ -76,17 +76,20 @@ body {
 .auth-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .auth-brand .brand-logo {
-  height: 36px;
+  height: 42px;
   width: auto;
 }
 
 .auth-brand h1 {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 700;
+  margin: 0;
 }
 
 /* ── Toolbar ───────────────────────────────────────────────────────── */

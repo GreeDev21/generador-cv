@@ -10,6 +10,7 @@
     /* ── Auth layout ─────────────────────────────────────────────── */
     .auth-wrapper {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: calc(100vh - 100px);
@@ -155,14 +156,11 @@
 </head>
 <body>
   <div id="app">
-    <header class="app-header">
+    <div class="auth-wrapper">
       <div class="auth-brand">
         <img src="/assets/kudosLogo.png" alt="KudosCV" class="brand-logo">
         <h1>KudosCV</h1>
       </div>
-    </header>
-
-    <div class="auth-wrapper">
       <div class="auth-card">
         <h2>Create Account</h2>
         <p class="auth-subtitle">Register to manage your CV online</p>
