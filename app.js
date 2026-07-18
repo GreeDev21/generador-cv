@@ -322,6 +322,25 @@ window.GreedevCV = window.GreedevCV || {};
       // Listen for localStorage draft restore prompt
       document.addEventListener('GreedevCV:draft-found', onDraftFound);
 
+      // Tab toggle (mobile)
+      var tabBtns = document.querySelectorAll('.tab-toggle .tab-btn');
+      var editorPanel = document.getElementById('editor-panel');
+      var previewPanel = document.getElementById('preview-panel');
+
+      function activateTab(panelId) {
+        tabBtns.forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.panel === panelId);
+        });
+        editorPanel.classList.toggle('panel-hidden', panelId !== 'editor');
+        previewPanel.classList.toggle('panel-hidden', panelId !== 'preview');
+      }
+
+      tabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activateTab(btn.dataset.panel);
+        });
+      });
+
       try {
         // 1. Init DataStore — fetches cv.json + versions
         await window.GreedevCV.DataStore.init();
