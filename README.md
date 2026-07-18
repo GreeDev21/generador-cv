@@ -1,85 +1,90 @@
-# GreeDev CV — Gestor de Currículums
+# KudosCV — Gestor de Currículums
 
-Aplicación web para crear, editar y gestionar versiones de tu currículum vitae en múltiples idiomas, con vista previa en tiempo real y plantilla profesional tipo Harvard.
+Aplicación web multiusuario para crear, editar y gestionar versiones de tu currículum vitae en múltiples idiomas, con vista previa en tiempo real y plantilla profesional tipo Harvard.
 
 ## ✨ Funcionalidades
 
 - **Editor visual** — Modificá cada sección del CV desde un panel lateral: datos personales, resumen, experiencias, educación, skills y proyectos.
 - **Versiones** — Creá distintas versiones de tu CV para diferentes postulaciones. Cada versión tiene su propio target, selección de items y bullets personalizados.
 - **Idioma EN/ES** — Cambiá entre español e inglés con un toggle. Los textos traducibles se guardan en ambos idiomas.
-- **Vista previa en vivo** — El CV se renderiza automáticamente al editar. Dale a "PDF" para imprimir o guardar como PDF.
-- **Persistencia** — Los cambios se guardan en el servidor. Si el servidor no está disponible, se descarga un archivo JSON como respaldo.
-- **Recuperación de borrador** — Si editás y cerrás sin guardar, al recargar la página se te ofrece restaurar el borrador automático.
-- **CRUD completo** — Creá, duplicá, eliminá y seleccioná versiones desde la barra de herramientas.
+- **Vista previa en vivo** — El CV se renderiza automáticamente al editar.
+- **Multiusuario** — Cada usuario tiene su propio espacio de trabajo con sus CVs.
+- **Autenticación** — Registro y login con JWT. Datos aislados por usuario (nadie ve CVs de otros).
+- **Persistencia** — Los datos se guardan en PostgreSQL, disponibles desde cualquier dispositivo.
+- **Recuperación de borrador** — Autoguardado local por si cerrás sin guardar.
 
-## 🚀 Cómo usarlo
+## 🚀 Deploy
 
-### Requisitos
+La app está diseñada para correr en **Vercel** con **Vercel Postgres**.
 
-- [Node.js](https://nodejs.org/) (v18 o superior)
-
-### Arrancar el servidor
-
-```bash
-# Puerto 3000 por defecto
-node serve.js
-
-# Puerto personalizado
-PORT=3001 node serve.js
-```
-
-Abrí **http://localhost:3000** (o el puerto que hayas elegido) en el navegador.
-
-### Usar con datos de ejemplo
-
-El repo tiene dos ramas:
-
-| Rama | Contenido |
-|------|-----------|
-| `main` | Código + datos personales reales |
-| `sample-data` | Código + datos ficticios de ejemplo |
-
-Si querés mostrar la app sin exponer datos reales, cambiá la rama a `sample-data`.
+1. Cloná el repo y conectalo a Vercel
+2. Provisioná Vercel Postgres (Storage → Create Database)
+3. Seteá `JWT_SECRET` en Environment Variables
+4. Corré las migraciones en `api/_lib/migrations/`
+5. Deployá con `vercel --prod`
 
 ## 📁 Estructura del proyecto
 
 ```
 greedev-cv/
-├── serve.js              # Servidor HTTP local (Node.js stdlib, sin npm)
-├── index.html            # Página principal
+├── api/                   # Vercel Functions (Node.js serverless)
+│   ├── auth/
+│   │   ├── register.js    # POST /api/auth/register
+│   │   ├── login.js       # POST /api/auth/login
+│   │   └── me.js          # GET  /api/auth/me
+│   ├── cv/
+│   │   ├── pool.js        # GET|PUT /api/cv/pool
+│   │   ├── versions.js    # GET|POST /api/cv/versions
+│   │   └── versions/[id].js # GET|PATCH|DELETE /api/cv/versions/:id
+│   └── _lib/
+│       ├── auth.js        # Middleware JWT (requireAuth, signToken)
+│       ├── db.js          # Conexión a @vercel/postgres
+│       └── migrations/    # Migraciones SQL
 ├── js/
-│   ├── data-store.js     # Módulo de datos: carga, versión, persistencia
-│   ├── editor.js         # Editor de formularios
-│   ├── preview.js        # Renderizado de la plantilla Harvard
+│   ├── data-store.js      # Módulo de datos con Bearer auth
+│   ├── editor.js          # Editor de formularios
+│   └── preview.js         # Renderizado de la plantilla Harvard
 ├── css/
-│   └── styles.css        # Estilos completos
-├── data/
-│   ├── cv.json           # Base pool con toda la información del CV
-│   └── versions/         # Archivos JSON de cada versión
-└── openspec/             # Documentación SDD (especificaciones y diseño)
+│   └── styles.css         # Estilos completos
+├── assets/                # Logo y favicon
+├── login.html             # Inicio de sesión
+├── register.html          # Registro de usuario
+├── credits.html           # Créditos de recursos
+└── serve.js               # Servidor local (deprecado, reemplazado por Vercel Functions)
 ```
 
-## 🧠 Cómo funciona
+## 🧠 Arquitectura
 
-**Arquitectura**: Todo corre en el navegador con un servidor HTTP mínimo. Los módulos JS se cargan como IIFEs (sin build step, sin npm). El flujo es:
+- **Frontend**: JavaScript vanilla (IIFE modules), HTML5, CSS3 — sin frameworks, sin build step.
+- **Backend**: Vercel Functions (Node.js serverless) con `@vercel/postgres`.
+- **Auth**: JWT con bcryptjs, token en localStorage, expiración de 7 días.
+- **Base de datos**: Vercel Postgres (Neon) con 3 tablas: `users`, `cv_pools`, `cv_versions`.
+- **Aislamiento**: Cada query incluye `WHERE user_id = $1` — un usuario nunca ve datos de otro.
 
-1. `serve.js` sirve archivos estáticos y expone endpoints para guardar/borrar archivos JSON en el servidor.
-2. `data-store.js` carga el CV base y las versiones, maneja el estado y la persistencia.
-3. `editor.js` construye formularios dinámicos para editar cada sección.
-4. `preview.js` renderiza el CV en vivo con la plantilla Harvard.
+## 🌐 API
 
-Los módulos se comunican mediante eventos personalizados (`GreedevCV:datachange`, `GreedevCV:languagechange`, etc.).
-
-## 🌐 API del servidor
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/api/versions` | Lista las versiones disponibles |
-| `POST` | `/api/save` | Guarda un archivo JSON en el servidor |
-| `DELETE` | `/api/save` | Elimina un archivo JSON del servidor |
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/api/auth/register` | No | Registro de usuario |
+| POST | `/api/auth/login` | No | Inicio de sesión |
+| GET | `/api/auth/me` | Sí | Datos del usuario autenticado |
+| GET | `/api/cv/pool` | Sí | Obtener pool de datos del CV |
+| PUT | `/api/cv/pool` | Sí | Guardar pool de datos del CV |
+| GET | `/api/cv/versions` | Sí | Listar versiones |
+| POST | `/api/cv/versions` | Sí | Crear nueva versión |
+| GET | `/api/cv/versions/:id` | Sí | Obtener versión |
+| PATCH | `/api/cv/versions/:id` | Sí | Actualizar versión |
+| DELETE | `/api/cv/versions/:id` | Sí | Eliminar versión |
 
 ## 🛠️ Stack
 
-- **Frontend**: JavaScript vanilla (IIFE modules), HTML5, CSS3
-- **Backend**: Node.js (stdlib — cero dependencias)
-- **Persistencia**: Archivos JSON en el servidor + localStorage para borradores
+- **Frontend**: JavaScript vanilla, HTML5, CSS3
+- **Backend**: Node.js, Vercel Functions
+- **Base de datos**: Vercel Postgres (Neon)
+- **Auth**: JWT + bcryptjs
+- **Hosting**: Vercel
+
+## 🙌 Créditos
+
+Los iconos del logo fueron creados por [wahya - Flaticon](https://www.flaticon.es/autores/wahya).
+Ver [Créditos](/credits.html) para más información.
