@@ -100,39 +100,39 @@ window.GreedevCV = window.GreedevCV || {};
     var html = '';
 
     // ── Header ──────────────────────────────────────────────────────
-    html += '<div class="preview-header">';
-    html += '<h1 class="preview-name">' + data.personalInfo.name + '</h1>';
-    html += '<p class="preview-contact">' + buildContactLine(data.personalInfo) + '</p>';
+    html += '<div class="hr-header">';
+    html += '<h1 class="hr-name">' + data.personalInfo.name + '</h1>';
+    html += '<p class="hr-contact">' + buildContactLine(data.personalInfo) + '</p>';
     html += '<span class="preview-lang-badge">' + lang.toUpperCase() + '</span>';
     html += '</div>';
 
     // ── Professional Summary ────────────────────────────────────────
     if (data.sections.summary && data.summary) {
-      html += '<div class="preview-section">';
-      html += '<h2 class="preview-section-heading">' + t('Professional Summary', lang) + '</h2>';
-      html += '<p class="preview-summary">' + data.summary + '</p>';
+      html += '<div class="hr-section">';
+      html += '<h2 class="hr-section-heading">' + t('Professional Summary', lang) + '</h2>';
+      html += '<p class="hr-summary">' + data.summary + '</p>';
       html += '</div>';
     }
 
     // ── Experience ──────────────────────────────────────────────────
     if (data.sections.experience && data.experiences.length > 0) {
-      html += '<div class="preview-section">';
-      html += '<h2 class="preview-section-heading">' + t('Experience', lang) + '</h2>';
+      html += '<div class="hr-section">';
+      html += '<h2 class="hr-section-heading">' + t('Experience', lang) + '</h2>';
 
       for (var ei = 0; ei < data.experiences.length; ei++) {
         var exp = data.experiences[ei];
-        html += '<div class="preview-entry">';
-        html += '<div class="preview-entry-header">';
-        html += '<span class="preview-entry-role">' + exp.role + '</span>';
-        html += '<span class="preview-entry-date">' + formatDate(exp.startDate) + ' — ' + formatDate(exp.endDate) + '</span>';
+        html += '<div class="hr-entry">';
+        html += '<div class="hr-entry-header">';
+        html += '<span class="hr-entry-role">' + exp.role + '</span>';
+        html += '<span class="hr-entry-date">' + formatDate(exp.startDate) + ' — ' + formatDate(exp.endDate) + '</span>';
         html += '</div>';
-        html += '<div class="preview-entry-sub">';
+        html += '<div class="hr-entry-sub">';
         html += exp.company;
         if (exp.location) html += ', ' + exp.location;
         html += '</div>';
 
         if (exp.bullets && exp.bullets.length > 0) {
-          html += '<ul class="preview-bullets">';
+          html += '<ul class="hr-bullets">';
           for (var bi = 0; bi < exp.bullets.length; bi++) {
             html += '<li>' + exp.bullets[bi] + '</li>';
           }
@@ -146,17 +146,17 @@ window.GreedevCV = window.GreedevCV || {};
 
     // ── Education ───────────────────────────────────────────────────
     if (data.sections.education && data.education.length > 0) {
-      html += '<div class="preview-section">';
-      html += '<h2 class="preview-section-heading">' + t('Education', lang) + '</h2>';
+      html += '<div class="hr-section">';
+      html += '<h2 class="hr-section-heading">' + t('Education', lang) + '</h2>';
 
       for (var edui = 0; edui < data.education.length; edui++) {
         var edu = data.education[edui];
-        html += '<div class="preview-entry">';
-        html += '<div class="preview-entry-header">';
-        html += '<span class="preview-entry-degree">' + edu.degree + t(' in ', lang) + edu.field + '</span>';
-        html += '<span class="preview-entry-date">' + formatDate(edu.startDate) + ' — ' + formatDate(edu.endDate) + '</span>';
+        html += '<div class="hr-entry">';
+        html += '<div class="hr-entry-header">';
+        html += '<span class="hr-entry-degree">' + edu.degree + t(' in ', lang) + edu.field + '</span>';
+        html += '<span class="hr-entry-date">' + formatDate(edu.startDate) + ' — ' + formatDate(edu.endDate) + '</span>';
         html += '</div>';
-        html += '<div class="preview-entry-sub">' + edu.institution + '</div>';
+        html += '<div class="hr-entry-sub">' + edu.institution + '</div>';
         html += '</div>';
       }
 
@@ -165,13 +165,13 @@ window.GreedevCV = window.GreedevCV || {};
 
     // ── Skills ──────────────────────────────────────────────────────
     if (data.sections.skills && data.skills.length > 0) {
-      html += '<div class="preview-section">';
-      html += '<h2 class="preview-section-heading">' + t('Skills', lang) + '</h2>';
+      html += '<div class="hr-section">';
+      html += '<h2 class="hr-section-heading">' + t('Skills', lang) + '</h2>';
 
       for (var si = 0; si < data.skills.length; si++) {
         var skill = data.skills[si];
-        html += '<div class="preview-skill-line">';
-        html += '<span class="preview-skill-category">' + t(skill.category, lang) + ':</span> ';
+        html += '<div class="hr-skill-line">';
+        html += '<span class="hr-skill-category">' + t(skill.category, lang) + ':</span> ';
         html += skill.items.join(', ');
         html += '</div>';
       }
@@ -181,25 +181,25 @@ window.GreedevCV = window.GreedevCV || {};
 
     // ── Projects ────────────────────────────────────────────────────
     if (data.sections.projects && data.projects.length > 0) {
-      html += '<div class="preview-section">';
-      html += '<h2 class="preview-section-heading">' + t('Projects', lang) + '</h2>';
+      html += '<div class="hr-section">';
+      html += '<h2 class="hr-section-heading">' + t('Projects', lang) + '</h2>';
 
       for (var pi = 0; pi < data.projects.length; pi++) {
         var proj = data.projects[pi];
-        html += '<div class="preview-entry">';
-        html += '<div class="preview-entry-header">';
-        html += '<span class="preview-entry-project">' + proj.name + '</span>';
+        html += '<div class="hr-entry">';
+        html += '<div class="hr-entry-header">';
+        html += '<span class="hr-entry-project">' + proj.name + '</span>';
         if (proj.url) {
-          html += '<a class="preview-entry-url" href="' + proj.url + '" target="_blank" rel="noopener">' + proj.url + '</a>';
+          html += '<a class="hr-entry-url" href="' + proj.url + '" target="_blank" rel="noopener">' + proj.url + '</a>';
         }
         html += '</div>';
 
         if (proj.description) {
-          html += '<div class="preview-entry-sub">' + proj.description + '</div>';
+          html += '<div class="hr-entry-sub">' + proj.description + '</div>';
         }
 
         if (proj.bullets && proj.bullets.length > 0) {
-          html += '<ul class="preview-bullets">';
+          html += '<ul class="hr-bullets">';
           for (var pbi = 0; pbi < proj.bullets.length; pbi++) {
             html += '<li>' + proj.bullets[pbi] + '</li>';
           }
