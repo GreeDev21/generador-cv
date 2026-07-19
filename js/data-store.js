@@ -282,6 +282,7 @@ window.GreedevCV = window.GreedevCV || {};
       selectedSkills: [],
       selectedProjects: [],
       experienceBullets: {},
+      template: 'harvard',
     };
   }
 
