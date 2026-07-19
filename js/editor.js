@@ -641,6 +641,21 @@ window.GreedevCV = window.GreedevCV || {};
     var sections = version.sections || {};
     var html = '';
 
+    // ── Version Settings ────────────────────────────────────────────
+    html += '<section class="editor-section">';
+    html += '<h3 class="editor-section-title">Version Settings</h3>';
+    html += '<label class="editor-field">';
+    html += '<span class="editor-field-label">Template:</span>';
+    html += '<select class="editor-input" data-store="version" data-path="template">';
+    var templateNames = (window.GreedevCV.Templates && window.GreedevCV.Templates.list()) || [];
+    var currentTemplate = version.template || 'harvard';
+    for (var ti = 0; ti < templateNames.length; ti++) {
+      html += '<option value="' + templateNames[ti] + '"' + (templateNames[ti] === currentTemplate ? ' selected' : '') + '>' + templateNames[ti] + '</option>';
+    }
+    html += '</select>';
+    html += '</label>';
+    html += '</section>';
+
     // ── Personal Info ───────────────────────────────────────────────
     html += '<section class="editor-section">';
     html += '<h3 class="editor-section-title">Personal Info</h3>';
