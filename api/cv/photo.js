@@ -142,23 +142,21 @@ async function handleGet(req, res) {
  * to use the standard formData() API.
  */
 async function getFormData(req) {
-  var chunks = [];
-  for await (var chunk of req) {
+  const chunks = [];
+  for await (const chunk of req) {
     chunks.push(chunk);
   }
-  var buffer = Buffer.concat(chunks);
+  const buffer = Buffer.concat(chunks);
 
-  var headers = {};
-  for (var key in req.headers) {
-    if (req.headers.hasOwnProperty(key)) {
-      var value = req.headers[key];
-      if (value !== undefined && value !== null) {
-        headers[key] = Array.isArray(value) ? value.join(', ') : String(value);
-      }
+  const headers = {};
+  for (const key of Object.keys(req.headers)) {
+    const value = req.headers[key];
+    if (value !== undefined && value !== null) {
+      headers[key] = Array.isArray(value) ? value.join(', ') : String(value);
     }
   }
 
-  var webReq = new Request('http://localhost', {
+  const webReq = new Request('http://localhost', {
     method: req.method,
     headers: headers,
     body: buffer,
