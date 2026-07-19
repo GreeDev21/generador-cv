@@ -341,7 +341,7 @@ window.GreedevCV = window.GreedevCV || {};
         state.base = {
           $schema: 'greedev-cv-1.0',
           schemaVersion: 2,
-          personalInfo: {},
+          personalInfo: { photo: '' },
           summary: '',
           experiences: [],
           education: [],
@@ -476,6 +476,48 @@ window.GreedevCV = window.GreedevCV || {};
       return res.ok;
     } catch (_) {
       return false;
+    }
+  }
+
+  /**
+   * Upload a photo to /api/cv/photo via multipart/form-data.
+   * Uses raw fetch (not apiFetch) because FormData requires
+   * the browser to set Content-Type with the multipart boundary.
+   *
+   * On success, updates personalInfo.photo in local state and emits change.
+   *
+   * @param {File|Blob} file
+   * @returns {Promise<string|null>}  — the blob URL, or null on failure
+   */
+  async function uploadPhoto(file) {
+    var token = getToken();
+    if (!token) return null;
+
+    try {
+      var formData = new FormData();
+      formData.append('file', file);
+
+      var res = await fetch('/api/cv/photo', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+        },
+        body: formData,
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem(TOKEN_KEY);
+        window.location.href = '/login.html';
+        return null;
+      }
+
+      if (!res.ok) return null;
+
+      var result = await res.json();
+      updateBase('personalInfo.photo', result.url);
+      return result.url;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -730,6 +772,7 @@ window.GreedevCV = window.GreedevCV || {};
     setActiveVersion: setActiveVersion,
     updateBase: updateBase,
     updateVersion: updateVersion,
+    uploadPhoto: uploadPhoto,
     save: save,
     saveBase: saveBase,
     generateId: generateId,
