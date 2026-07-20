@@ -88,6 +88,39 @@ window.GreedevCV = window.GreedevCV || {};
   function handleChange(e) {
     var target = e.target;
 
+    // ── Photo file selection ─────────────────────────────────────────
+    if (target.id === 'photo-file-input' && target.files && target.files.length > 0) {
+      var file = target.files[0];
+      // Show local preview immediately
+      var preview = container.querySelector('#photo-preview');
+      if (preview) {
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          preview.src = ev.target.result;
+          preview.style.display = '';
+        };
+        reader.readAsDataURL(file);
+      }
+      // Upload to server
+      var ds = window.GreedevCV.DataStore;
+      if (ds && ds.uploadPhoto) {
+        ds.uploadPhoto(file).then(function (url) {
+          if (url) {
+            // Update preview src with server URL after upload
+            if (preview) {
+              var token = '';
+              try { token = localStorage.getItem('greedevcv-token') || ''; } catch (_) {}
+              preview.src = '/api/cv/photo?token=' + encodeURIComponent(token);
+            }
+            // Show remove button
+            var removeBtn = container.querySelector('#btn-remove-photo');
+            if (removeBtn) removeBtn.style.display = '';
+          }
+        });
+      }
+      return;
+    }
+
     // Handle inline-form "current" checkbox toggle (disable endDate when checked)
     if (target.getAttribute('data-current') !== null) {
       var form = target.closest('.inline-form');
@@ -286,6 +319,21 @@ window.GreedevCV = window.GreedevCV || {};
         return;
       }
 
+      return;
+    }
+
+    // ── Upload Photo button → trigger hidden file input ─────────────
+    if (target.id === 'btn-upload-photo') {
+      var fileInput = container.querySelector('#photo-file-input');
+      if (fileInput) fileInput.click();
+      return;
+    }
+
+    // ── Remove Photo ─────────────────────────────────────────────────
+    if (target.id === 'btn-remove-photo') {
+      var ds = window.GreedevCV.DataStore;
+      if (!ds) return;
+      ds.updateBase('personalInfo.photo', '');
       return;
     }
 
@@ -666,6 +714,32 @@ window.GreedevCV = window.GreedevCV || {};
     html += buildInput('Website', 'base', 'personalInfo.website', info.website || '');
     html += buildInput('LinkedIn', 'base', 'personalInfo.linkedin', info.linkedin || '');
     html += buildInput('GitHub', 'base', 'personalInfo.github', info.github || '');
+
+    // ── Photo upload ────────────────────────────────────────────────
+    var token = '';
+    try { token = localStorage.getItem('greedevcv-token') || ''; } catch (_) {}
+    var hasPhoto = info.photo ? true : false;
+
+    html += '<div class="photo-upload-wrapper">';
+    html += '<span class="editor-field-label">Photo:</span>';
+    html += '<div class="photo-upload-controls">';
+
+    // Preview
+    html += '<div class="photo-upload-preview">';
+    if (hasPhoto) {
+      html += '<img id="photo-preview" class="photo-preview-img" src="/api/cv/photo?token=' + encodeURIComponent(token) + '" alt="Photo preview">';
+    } else {
+      html += '<img id="photo-preview" class="photo-preview-img" src="" alt="Photo preview" style="display:none">';
+    }
+    html += '</div>';
+
+    // Hidden file input
+    html += '<input type="file" id="photo-file-input" class="photo-file-input" accept="image/png,image/jpeg,image/webp">';
+    html += '<button type="button" id="btn-upload-photo" class="btn btn-primary">Upload Photo</button>';
+    html += '<button type="button" id="btn-remove-photo" class="btn btn-danger"' + (hasPhoto ? '' : ' style="display:none"') + '>Remove Photo</button>';
+    html += '</div>';
+    html += '</div>';
+
     html += '</section>';
 
     // ── Summary ─────────────────────────────────────────────────────

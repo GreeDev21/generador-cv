@@ -218,6 +218,8 @@ window.GreedevCV = window.GreedevCV || {};
 
   window.GreedevCV.Templates.Harvard = {
     render: render,
+    HEADINGS: HEADINGS,
+    SKILL_CATEGORIES: SKILL_CATEGORIES,
   };
 
   // Self-register as "harvard" template
