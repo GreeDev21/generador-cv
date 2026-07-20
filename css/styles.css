@@ -1347,7 +1347,8 @@ body {
   .status-dot,
   #version-selector,
   .lang-toggle,
-  .preview-lang-badge {
+  .preview-lang-badge,
+  .app-footer {
     display: none !important;
   }
 

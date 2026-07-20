@@ -715,30 +715,33 @@ window.GreedevCV = window.GreedevCV || {};
     html += buildInput('LinkedIn', 'base', 'personalInfo.linkedin', info.linkedin || '');
     html += buildInput('GitHub', 'base', 'personalInfo.github', info.github || '');
 
-    // ── Photo upload ────────────────────────────────────────────────
-    var token = '';
-    try { token = localStorage.getItem('greedevcv-token') || ''; } catch (_) {}
-    var hasPhoto = info.photo ? true : false;
+    // ── Photo upload (only for templates that support photos) ─────
+    var activeTemplate = (version.template || 'harvard');
+    if (activeTemplate !== 'harvard') {
+      var token = '';
+      try { token = localStorage.getItem('greedevcv-token') || ''; } catch (_) {}
+      var hasPhoto = info.photo ? true : false;
 
-    html += '<div class="photo-upload-wrapper">';
-    html += '<span class="editor-field-label">Photo:</span>';
-    html += '<div class="photo-upload-controls">';
+      html += '<div class="photo-upload-wrapper">';
+      html += '<span class="editor-field-label">Photo:</span>';
+      html += '<div class="photo-upload-controls">';
 
-    // Preview
-    html += '<div class="photo-upload-preview">';
-    if (hasPhoto) {
-      html += '<img id="photo-preview" class="photo-preview-img" src="/api/cv/photo?token=' + encodeURIComponent(token) + '" alt="Photo preview">';
-    } else {
-      html += '<img id="photo-preview" class="photo-preview-img" src="" alt="Photo preview" style="display:none">';
+      // Preview
+      html += '<div class="photo-upload-preview">';
+      if (hasPhoto) {
+        html += '<img id="photo-preview" class="photo-preview-img" src="/api/cv/photo?token=' + encodeURIComponent(token) + '" alt="Photo preview">';
+      } else {
+        html += '<img id="photo-preview" class="photo-preview-img" src="" alt="Photo preview" style="display:none">';
+      }
+      html += '</div>';
+
+      // Hidden file input
+      html += '<input type="file" id="photo-file-input" class="photo-file-input" accept="image/png,image/jpeg,image/webp">';
+      html += '<button type="button" id="btn-upload-photo" class="btn btn-primary">Upload Photo</button>';
+      html += '<button type="button" id="btn-remove-photo" class="btn btn-danger"' + (hasPhoto ? '' : ' style="display:none"') + '>Remove Photo</button>';
+      html += '</div>';
+      html += '</div>';
     }
-    html += '</div>';
-
-    // Hidden file input
-    html += '<input type="file" id="photo-file-input" class="photo-file-input" accept="image/png,image/jpeg,image/webp">';
-    html += '<button type="button" id="btn-upload-photo" class="btn btn-primary">Upload Photo</button>';
-    html += '<button type="button" id="btn-remove-photo" class="btn btn-danger"' + (hasPhoto ? '' : ' style="display:none"') + '>Remove Photo</button>';
-    html += '</div>';
-    html += '</div>';
 
     html += '</section>';
 
