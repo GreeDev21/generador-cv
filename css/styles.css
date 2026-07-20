@@ -1284,27 +1284,20 @@ body {
 
 @media print {
   .md-layout {
-    display: block;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
   }
 
   .md-sidebar {
-    background: none !important;
-    color: #000 !important;
-    padding: 0;
-    margin-bottom: 16px;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
     border-radius: 0;
   }
 
-  .md-sidebar-name {
-    color: #000 !important;
-  }
-
   .md-photo {
-    border-color: #ccc;
-  }
-
-  .md-contact {
-    color: #555 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .md-contact a {
@@ -1312,23 +1305,8 @@ body {
     text-decoration: none;
   }
 
-  .md-sidebar-heading {
-    color: #000 !important;
-    border-bottom-color: #000;
-  }
-
-  .md-skill-category-name {
-    color: #333 !important;
-  }
-
-  .md-skill-tag {
-    background: #f0f0f0 !important;
-    color: #333 !important;
-  }
-
-  .md-section-heading {
-    color: #000 !important;
-    border-bottom-color: #000;
+  .md-contact-link {
+    color: #60a5fa !important;
   }
 
   .md-entry-url {
@@ -1336,6 +1314,7 @@ body {
     text-decoration: none;
   }
 
+  .md-section,
   .md-entry {
     page-break-inside: avoid;
   }

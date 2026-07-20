@@ -15,3 +15,5 @@ Thumbs.db
 !package.json
 !package-lock.json
 !vercel.json
+.vercel
+.env*

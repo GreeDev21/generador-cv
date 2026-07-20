@@ -91,7 +91,9 @@ async function handlePost(req, res) {
 
 async function handleGet(req, res) {
   // Extract JWT from query param for <img> tags (cannot set Bearer header from markup)
-  const token = req.query && req.query.token;
+  // Parse URL manually — req.query is NOT reliably available in @vercel/node
+  const parsedUrl = new URL(req.url, 'http://localhost');
+  const token = parsedUrl.searchParams.get('token');
   if (!token) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
